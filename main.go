@@ -70,9 +70,9 @@ func main() {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.Get("/user/{username}", handlers.GetUserHandler(db))
 	r.Post("/register", handlers.RegisterHandler(db))
-	r.Get("/vault/{id}", handlers.GetVaultHandler(db))
+	r.Get("/user/{username}", handlers.GetUserHandler(db))
+	r.Get("/vault/{username}", handlers.GetVaultHandler(db))
 
 	// Serve OpenAPI documentation
 	r.Get("/swagger/*", httpSwagger.WrapHandler)

@@ -15,7 +15,7 @@ import (
 // @Produce json
 // @Param username path string true "Username"
 // @Success 200 {object} models.UserResponse
-// @Success 204 {object} string
+// @Success 404 {object} string
 // @Failure 500 {object} string
 // @Router /user/{username} [get]
 func GetUserHandler(db *sql.DB) http.HandlerFunc {
@@ -40,7 +40,7 @@ func GetUserHandler(db *sql.DB) http.HandlerFunc {
 			userResponse.Salt = user.ClientSalt
 			json.NewEncoder(w).Encode(userResponse)
 		} else {
-			http.Error(w, "User not found", http.StatusNoContent)
+			http.Error(w, "User not found", http.StatusNotFound)
 		}
 	}
 }
