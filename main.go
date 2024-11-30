@@ -31,25 +31,31 @@ func main() {
 	}
 	defer db.Close()
 
-	// Create tables if they don't exist
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
+	// Enable foreign key support
+	_, err = db.Exec("PRAGMA foreign_keys = ON;")
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS vaults (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		username TEXT UNIQUE,
-		key TEXT,
-		clientSalt TEXT,
-		serverSalt TEXT,
-		hashedKey TEXT,
-		vaultId INTEGER,
-		lastLogin DATETIME
+		filename TEXT,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 	)`)
 	if err != nil {
 		panic(err)
 	}
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS vaults (
+
+	// Create tables if they don't exist
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		userId INTEGER,
-		filename TEXT,
-		createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+		username TEXT UNIQUE,
+		client_salt TEXT,
+		server_salt TEXT,
+		hashed_key TEXT,
+		last_login DATETIME,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY (vault_id) REFERENCES vaults(id)
 	)`)
 	if err != nil {
 		panic(err)
@@ -63,7 +69,7 @@ func main() {
 
 	r.Get("/user/{username}", handlers.GetUser(db))
 	r.Post("/register", handlers.Register(db))
-	r.Get("/vault/{id}", handlers.GetVault(db))
+	r.Get("/vault/{username}", handlers.GetVault(db))
 
 	// Serve OpenAPI documentation
 	r.Get("/swagger/*", httpSwagger.WrapHandler)
