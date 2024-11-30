@@ -19,7 +19,7 @@ import (
 // @Failure 404 {object} string
 // @Failure 500 {object} string
 // @Router /vault/{id} [get]
-func GetVault(db *sql.DB) http.HandlerFunc {
+func GetVaultHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		usernameStr := chi.URLParam(r, "username")

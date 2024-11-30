@@ -15,3 +15,11 @@ type UserResponse struct {
 type VaultResponse struct {
 	ModifiedAt time.Time `json:"modifiedAt"`
 }
+
+type InvalidInputError struct {
+	Message string
+}
+
+func (i *InvalidInputError) Error() string {
+	return i.Message
+}

@@ -32,7 +32,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Register a new user
+      description: RegisterHandler a new user
       parameters:
       - description: User
         in: body
@@ -55,7 +55,7 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: Register a new user
+      summary: RegisterHandler a new user
       tags:
       - users
   /user/{username}:
@@ -89,11 +89,11 @@ paths:
     get:
       description: Get a vault by ID
       parameters:
-      - description: Vault ID
+      - description: username
         in: path
-        name: id
+        name: username
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:

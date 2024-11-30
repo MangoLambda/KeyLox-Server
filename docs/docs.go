@@ -21,7 +21,7 @@ const docTemplate = `{
     "paths": {
         "/register": {
             "post": {
-                "description": "Register a new user",
+                "description": "RegisterHandler a new user",
                 "consumes": [
                     "application/json"
                 ],
@@ -31,7 +31,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Register a new user",
+                "summary": "RegisterHandler a new user",
                 "parameters": [
                     {
                         "description": "User",
@@ -118,9 +118,9 @@ const docTemplate = `{
                 "summary": "Get a vault by ID",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Vault ID",
-                        "name": "id",
+                        "type": "string",
+                        "description": "username",
+                        "name": "username",
                         "in": "path",
                         "required": true
                     }

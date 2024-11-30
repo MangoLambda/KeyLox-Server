@@ -18,7 +18,7 @@ import (
 // @Success 204 {object} string
 // @Failure 500 {object} string
 // @Router /user/{username} [get]
-func GetUser(db *sql.DB) http.HandlerFunc {
+func GetUserHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		username := chi.URLParam(r, "username")

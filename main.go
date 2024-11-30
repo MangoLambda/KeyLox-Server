@@ -40,7 +40,7 @@ func main() {
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS vaults (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		filename TEXT,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	)`)
 	if err != nil {
 		panic(err)
@@ -55,6 +55,7 @@ func main() {
 		hashed_key TEXT,
 		last_login DATETIME,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		vault_id INTEGER,
 		FOREIGN KEY (vault_id) REFERENCES vaults(id)
 	)`)
 	if err != nil {
@@ -67,9 +68,9 @@ func main() {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.Get("/user/{username}", handlers.GetUser(db))
-	r.Post("/register", handlers.Register(db))
-	r.Get("/vault/{username}", handlers.GetVault(db))
+	r.Get("/user/{username}", handlers.GetUserHandler(db))
+	r.Post("/register", handlers.RegisterHandler(db))
+	r.Get("/vault/{username}", handlers.GetVaultHandler(db))
 
 	// Serve OpenAPI documentation
 	r.Get("/swagger/*", httpSwagger.WrapHandler)

@@ -2,15 +2,18 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/MangoLambda/KeyLox-Server/auth"
 	"github.com/MangoLambda/KeyLox-Server/models"
 )
 
-// @Summary Register a new user
-// @Description Register a new user
+// @Summary RegisterHandler a new user
+// @Description RegisterHandler a new user
 // @Tags users
 // @Accept json
 // @Produce json
@@ -19,10 +22,15 @@ import (
 // @Failure 409 {object} string
 // @Failure 500 {object} string
 // @Router /register [post]
-func Register(db *sql.DB) http.HandlerFunc {
+func RegisterHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var registerRequest models.RegisterRequest
 		if err := json.NewDecoder(r.Body).Decode(&registerRequest); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if err := validateInputs(registerRequest); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -62,18 +70,63 @@ func checkUsernameExists(db *sql.DB, username string) (bool, error) {
 }
 
 func registerUser(db *sql.DB, registerRequest models.RegisterRequest) error {
+
+	b64HashedKey, b64ServerSalt, err := auth.HashNewKey(registerRequest.Key)
+	if err != nil {
+		return err
+	}
+
+	var vaultId int
+	vaultId, err = createEmptyVault(db)
+	if err != nil {
+		return fmt.Errorf("failed to create empty vault:%v", err)
+	}
+
 	// Set server salt, vault id, and last login
 	user := models.DBUser{
 		Username:   registerRequest.Username,
 		ClientSalt: registerRequest.ClientSalt,
-		ServerSalt: "some-generated-server-salt", // Replace with actual salt generation logic
-		HashedKey:  "some-hashed-key",            // Replace with actual key hashing logic
+		ServerSalt: b64ServerSalt,
+		HashedKey:  b64HashedKey,
 		LastLogin:  time.Now(),
-		VaultId:    1, // Replace with actual vault ID logic if needed
+		VaultId:    vaultId,
 	}
 
-	_, err := db.Exec("INSERT INTO users (username, client_salt, server_salt, hashed_key, last_login, vault_id) VALUES (?, ?, ?, ?, ?, ?)",
+	_, err = db.Exec("INSERT INTO users (username, client_salt, server_salt, hashed_key, last_login, vault_id) VALUES (?, ?, ?, ?, ?, ?)",
 		user.Username, user.ClientSalt, user.ServerSalt, user.HashedKey, user.LastLogin, user.VaultId)
 
 	return err
+}
+
+func validateInputs(registerRequest models.RegisterRequest) error {
+	if registerRequest.Username == "" {
+		return &models.InvalidInputError{Message: "Username cannot be empty"}
+	}
+	if registerRequest.Key == "" {
+		return &models.InvalidInputError{Message: "Key cannot be empty"}
+	}
+	if registerRequest.ClientSalt == "" {
+		return &models.InvalidInputError{Message: "Client salt cannot be empty"}
+	}
+	if _, err := base64.StdEncoding.DecodeString(registerRequest.Key); err != nil {
+		return &models.InvalidInputError{Message: "Key must be a valid base64 string"}
+	}
+	if _, err := base64.StdEncoding.DecodeString(registerRequest.ClientSalt); err != nil {
+		return &models.InvalidInputError{Message: "Client salt must be a valid base64 string"}
+	}
+	return nil
+}
+
+func createEmptyVault(db *sql.DB) (int, error) {
+	result, err := db.Exec("INSERT INTO vaults (filename) VALUES (?)", nil)
+	if err != nil {
+		return 0, err
+	}
+
+	vaultId, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return int(vaultId), nil
 }
