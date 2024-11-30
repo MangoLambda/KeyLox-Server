@@ -8,6 +8,7 @@ import (
 
 	_ "github.com/MangoLambda/KeyLox-Server/docs"
 	handlers "github.com/MangoLambda/KeyLox-Server/handlers"
+	keyloxMiddleware "github.com/MangoLambda/KeyLox-Server/middleware"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -37,15 +38,6 @@ func main() {
 		panic(err)
 	}
 
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS vaults (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		filename TEXT,
-		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	)`)
-	if err != nil {
-		panic(err)
-	}
-
 	// Create tables if they don't exist
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -54,9 +46,18 @@ func main() {
 		server_salt TEXT,
 		hashed_key TEXT,
 		last_login DATETIME,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	)`)
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS vaults (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		filename TEXT,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-		vault_id INTEGER,
-		FOREIGN KEY (vault_id) REFERENCES vaults(id)
+		user_id INTEGER,
+		FOREIGN KEY (user_id) REFERENCES users(id)
 	)`)
 	if err != nil {
 		panic(err)
@@ -64,6 +65,7 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	r.Use(keyloxMiddleware.LogRequestResponse)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Timeout(60 * time.Second))

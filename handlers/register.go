@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -76,12 +75,6 @@ func registerUser(db *sql.DB, registerRequest models.RegisterRequest) error {
 		return err
 	}
 
-	var vaultId int
-	vaultId, err = createEmptyVault(db)
-	if err != nil {
-		return fmt.Errorf("failed to create empty vault:%v", err)
-	}
-
 	// Set server salt, vault id, and last login
 	user := models.DBUser{
 		Username:   registerRequest.Username,
@@ -89,11 +82,10 @@ func registerUser(db *sql.DB, registerRequest models.RegisterRequest) error {
 		ServerSalt: b64ServerSalt,
 		HashedKey:  b64HashedKey,
 		LastLogin:  time.Now(),
-		VaultId:    vaultId,
 	}
 
-	_, err = db.Exec("INSERT INTO users (username, client_salt, server_salt, hashed_key, last_login, vault_id) VALUES (?, ?, ?, ?, ?, ?)",
-		user.Username, user.ClientSalt, user.ServerSalt, user.HashedKey, user.LastLogin, user.VaultId)
+	_, err = db.Exec("INSERT INTO users (username, client_salt, server_salt, hashed_key, last_login) VALUES (?, ?, ?, ?, ?)",
+		user.Username, user.ClientSalt, user.ServerSalt, user.HashedKey, user.LastLogin)
 
 	return err
 }
@@ -115,18 +107,4 @@ func validateInputs(registerRequest models.RegisterRequest) error {
 		return &models.InvalidInputError{Message: "Client salt must be a valid base64 string"}
 	}
 	return nil
-}
-
-func createEmptyVault(db *sql.DB) (int, error) {
-	result, err := db.Exec("INSERT INTO vaults (filename) VALUES (?)", nil)
-	if err != nil {
-		return 0, err
-	}
-
-	vaultId, err := result.LastInsertId()
-	if err != nil {
-		return 0, err
-	}
-
-	return int(vaultId), nil
 }

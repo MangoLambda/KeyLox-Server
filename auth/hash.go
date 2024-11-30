@@ -17,8 +17,7 @@ func HashNewKey(b64Key string) (b64HashedKey string, b64ServerSalt string, err e
 func HashKey(b64Key string, b64ServerSalt string) (string, error) {
 	binaryServerSalt, err := base64.StdEncoding.DecodeString(b64ServerSalt)
 	if err != nil {
-		// TODO: This needs to be an internal server error
-		return "", err
+		return "", fmt.Errorf("failed to decode server salt :%v", err)
 	}
 
 	binaryKey, err := base64.StdEncoding.DecodeString(b64Key)
