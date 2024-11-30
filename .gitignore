@@ -37,4 +37,7 @@ KeyLox-Server
 Thumbs.db
 desktop.ini
 
+# VS Code specific files
+.vscode/
+
 
