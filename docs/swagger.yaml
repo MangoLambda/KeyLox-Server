@@ -1,24 +1,24 @@
 basePath: /
 definitions:
-  models.User:
+  models.RegisterRequest:
     properties:
       clientSalt:
         type: string
-      id:
-        type: integer
       key:
         type: string
       username:
         type: string
     type: object
-  models.Vault:
+  models.UserResponse:
     properties:
-      id:
-        type: integer
-      userId:
-        type: integer
+      clientSalt:
+        type: string
     type: object
-host: localhost:8080
+  models.VaultResponse:
+    properties:
+      modifiedAt:
+        type: string
+    type: object
 info:
   contact: {}
   description: Credentials synchronization server for KeyLox.
@@ -39,26 +39,22 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.RegisterRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            type: string
         "409":
           description: Conflict
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Register a new user
       tags:
       - users
@@ -77,13 +73,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/models.UserResponse'
+        "204":
+          description: No Content
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Gets a specific user
       tags:
       - user
@@ -102,25 +100,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Vault'
+            $ref: '#/definitions/models.VaultResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Get a vault by ID
       tags:
       - vaults
