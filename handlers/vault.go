@@ -13,7 +13,7 @@ import (
 // @Description Get a vault by ID
 // @Tags vaults
 // @Produce json
-// @Param username path string true "username"
+// @Param id path string true "Vault ID"
 // @Success 200 {object} models.VaultResponse
 // @Failure 400 {object} string
 // @Failure 404 {object} string

@@ -89,9 +89,9 @@ paths:
     get:
       description: Get a vault by ID
       parameters:
-      - description: username
+      - description: Vault ID
         in: path
-        name: username
+        name: id
         required: true
         type: string
       produces:

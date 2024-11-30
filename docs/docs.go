@@ -119,8 +119,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "username",
-                        "name": "username",
+                        "description": "Vault ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
