@@ -77,5 +77,3 @@ func registerUser(db *sql.DB, registerRequest models.RegisterRequest) error {
 
 	return err
 }
-
-func
