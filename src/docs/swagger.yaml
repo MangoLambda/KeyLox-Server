@@ -32,7 +32,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: RegisterHandler a new user
+      description: Upload a vault
       parameters:
       - description: User
         in: body
@@ -55,9 +55,9 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: RegisterHandler a new user
+      summary: Upload a vault
       tags:
-      - users
+      - vault
   /user/{username}:
     get:
       description: Gets a specific user
@@ -74,8 +74,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.UserResponse'
-        "204":
-          description: No Content
+        "404":
+          description: Not Found
           schema:
             type: string
         "500":
@@ -89,9 +89,9 @@ paths:
     get:
       description: Get a vault by ID
       parameters:
-      - description: Vault ID
+      - description: Username
         in: path
-        name: id
+        name: username
         required: true
         type: string
       produces:

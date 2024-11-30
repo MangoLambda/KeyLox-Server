@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/MangoLambda/KeyLox-Server/models"
+	"github.com/MangoLambda/KeyLox-Server/src/models"
 )
 
 // TODO: Fix docs

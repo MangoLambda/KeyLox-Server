@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/MangoLambda/KeyLox-Server/auth"
-	"github.com/MangoLambda/KeyLox-Server/models"
+	"github.com/MangoLambda/KeyLox-Server/src/auth"
+	"github.com/MangoLambda/KeyLox-Server/src/models"
 )
 
 // @Summary Register a new user

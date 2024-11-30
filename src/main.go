@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"time"
 
-	_ "github.com/MangoLambda/KeyLox-Server/docs"
-	getHandlers "github.com/MangoLambda/KeyLox-Server/handlers/get"
-	postHandlers "github.com/MangoLambda/KeyLox-Server/handlers/post"
-	keyloxMiddleware "github.com/MangoLambda/KeyLox-Server/middleware"
+	_ "github.com/MangoLambda/KeyLox-Server/src/docs"
+	getHandlers "github.com/MangoLambda/KeyLox-Server/src/handlers/get"
+	postHandlers "github.com/MangoLambda/KeyLox-Server/src/handlers/post"
+	keyloxMiddleware "github.com/MangoLambda/KeyLox-Server/src/middleware"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
