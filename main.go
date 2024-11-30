@@ -22,7 +22,6 @@ import (
 // @license.name MIT
 // @license.url https://mit-license.org/
 
-// @host localhost:8080
 // @BasePath /
 
 func main() {
@@ -39,6 +38,7 @@ func main() {
 		key TEXT,
 		clientSalt TEXT,
 		serverSalt TEXT,
+		hashedKey TEXT,
 		vaultId INTEGER,
 		lastLogin DATETIME
 	)`)
