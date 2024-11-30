@@ -11,8 +11,8 @@ import (
 	"github.com/MangoLambda/KeyLox-Server/models"
 )
 
-// @Summary RegisterHandler a new user
-// @Description RegisterHandler a new user
+// @Summary Register a new user
+// @Description Register a new user
 // @Tags users
 // @Accept json
 // @Produce json

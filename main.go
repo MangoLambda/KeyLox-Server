@@ -7,7 +7,8 @@ import (
 	"time"
 
 	_ "github.com/MangoLambda/KeyLox-Server/docs"
-	handlers "github.com/MangoLambda/KeyLox-Server/handlers"
+	getHandlers "github.com/MangoLambda/KeyLox-Server/handlers/get"
+	postHandlers "github.com/MangoLambda/KeyLox-Server/handlers/post"
 	keyloxMiddleware "github.com/MangoLambda/KeyLox-Server/middleware"
 
 	"github.com/go-chi/chi/v5"
@@ -26,6 +27,25 @@ import (
 // @BasePath /
 
 func main() {
+	db := setupDb()
+
+	r := chi.NewRouter()
+	setupMiddleware(r)
+	setupRoutes(r, db)
+
+	srv := &http.Server{
+		Addr:           ":8080",
+		Handler:        r,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		IdleTimeout:    30 * time.Second,
+		MaxHeaderBytes: 1 << 20, // 1 MB
+	}
+
+	log.Fatal(srv.ListenAndServe())
+}
+
+func setupDb() *sql.DB {
 	db, err := sql.Open("sqlite3", "./data.db")
 	if err != nil {
 		panic(err)
@@ -63,28 +83,21 @@ func main() {
 		panic(err)
 	}
 
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Use(keyloxMiddleware.LogRequestResponse)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Timeout(60 * time.Second))
+	return db
+}
 
-	r.Post("/register", handlers.RegisterHandler(db))
-	r.Get("/user/{username}", handlers.GetUserHandler(db))
-	r.Get("/vault/{username}", handlers.GetVaultHandler(db))
+func setupMiddleware(router *chi.Mux) {
+	router.Use(middleware.Logger)
+	router.Use(keyloxMiddleware.LogRequestResponse)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Timeout(60 * time.Second))
+}
 
-	// Serve OpenAPI documentation
-	r.Get("/swagger/*", httpSwagger.WrapHandler)
+func setupRoutes(router *chi.Mux, db *sql.DB) {
+	router.Post("/register", postHandlers.RegisterHandler(db))
+	router.Get("/user/{username}", getHandlers.GetUserHandler(db))
+	router.Get("/vault/{username}", getHandlers.GetVaultHandler(db))
 
-	srv := &http.Server{
-		Addr:           ":8080",
-		Handler:        r,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		IdleTimeout:    30 * time.Second,
-		MaxHeaderBytes: 1 << 20, // 1 MB
-	}
-
-	log.Fatal(srv.ListenAndServe())
+	router.Get("/swagger/*", httpSwagger.WrapHandler)
 }
