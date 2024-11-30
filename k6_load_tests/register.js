@@ -20,7 +20,7 @@ export default function () {
 function generateRandomUsername() {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let username = 'User_';
-    let length = Math.floor(Math.random() * 64)
+    let length = 2
     for (let i = 0; i < length; i++) {
         username += characters.charAt(Math.floor(Math.random() * characters.length));
     }
