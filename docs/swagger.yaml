@@ -1,0 +1,127 @@
+basePath: /
+definitions:
+  models.User:
+    properties:
+      clientSalt:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      username:
+        type: string
+    type: object
+  models.Vault:
+    properties:
+      id:
+        type: integer
+      userId:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Credentials synchronization server for KeyLox.
+  license:
+    name: MIT
+    url: https://mit-license.org/
+  title: KeyLox Server API
+  version: "1.0"
+paths:
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - users
+  /user/{username}:
+    get:
+      description: Gets a specific user
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Gets a specific user
+      tags:
+      - user
+  /vault/{id}:
+    get:
+      description: Get a vault by ID
+      parameters:
+      - description: Vault ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Vault'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a vault by ID
+      tags:
+      - vaults
+swagger: "2.0"
