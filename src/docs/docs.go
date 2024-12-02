@@ -21,7 +21,7 @@ const docTemplate = `{
     "paths": {
         "/register": {
             "post": {
-                "description": "Upload a vault",
+                "description": "Register a new user",
                 "consumes": [
                     "application/json"
                 ],
@@ -29,9 +29,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "vault"
+                    "users"
                 ],
-                "summary": "Upload a vault",
+                "summary": "Register a new user",
                 "parameters": [
                     {
                         "description": "User",
@@ -93,6 +93,63 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/vault": {
+            "post": {
+                "description": "Upload a vault",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "vault"
+                ],
+                "summary": "Upload a vault",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File to upload",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Unable to parse form or file too big",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
                         "schema": {
                             "type": "string"
                         }

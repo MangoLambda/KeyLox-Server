@@ -32,7 +32,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Upload a vault
+      description: Register a new user
       parameters:
       - description: User
         in: body
@@ -55,9 +55,9 @@ paths:
           description: Internal Server Error
           schema:
             type: string
-      summary: Upload a vault
+      summary: Register a new user
       tags:
-      - vault
+      - users
   /user/{username}:
     get:
       description: Gets a specific user
@@ -85,6 +85,44 @@ paths:
       summary: Gets a specific user
       tags:
       - user
+  /vault:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a vault
+      parameters:
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Unable to parse form or file too big
+          schema:
+            type: string
+        "409":
+          description: Conflict
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Upload a vault
+      tags:
+      - vault
   /vault/{id}:
     get:
       description: Get a vault by ID

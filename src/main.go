@@ -9,7 +9,6 @@ import (
 	_ "github.com/MangoLambda/KeyLox-Server/src/docs"
 	getHandlers "github.com/MangoLambda/KeyLox-Server/src/handlers/get"
 	postHandlers "github.com/MangoLambda/KeyLox-Server/src/handlers/post"
-	keyloxMiddleware "github.com/MangoLambda/KeyLox-Server/src/middleware"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -28,6 +27,7 @@ import (
 
 func main() {
 	db := setupDb()
+	defer db.Close()
 
 	r := chi.NewRouter()
 	setupMiddleware(r)
@@ -50,7 +50,6 @@ func setupDb() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
 
 	// Enable foreign key support
 	_, err = db.Exec("PRAGMA foreign_keys = ON;")
@@ -88,7 +87,6 @@ func setupDb() *sql.DB {
 
 func setupMiddleware(router *chi.Mux) {
 	router.Use(middleware.Logger)
-	router.Use(keyloxMiddleware.LogRequestResponse)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.RequestID)
 	router.Use(middleware.Timeout(60 * time.Second))
@@ -96,6 +94,8 @@ func setupMiddleware(router *chi.Mux) {
 
 func setupRoutes(router *chi.Mux, db *sql.DB) {
 	router.Post("/register", postHandlers.RegisterHandler(db))
+	// TODO: Add username (or user id?) to the route
+	router.Post("/vault/{username}", postHandlers.VaultHandler(db))
 	router.Get("/user/{username}", getHandlers.GetUserHandler(db))
 	router.Get("/vault/{username}", getHandlers.GetVaultHandler(db))
 
