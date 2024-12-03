@@ -85,44 +85,6 @@ paths:
       summary: Gets a specific user
       tags:
       - user
-  /vault:
-    post:
-      consumes:
-      - multipart/form-data
-      description: Upload a vault
-      parameters:
-      - description: File to upload
-        in: formData
-        name: file
-        required: true
-        type: file
-      - description: Username
-        in: path
-        name: username
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: string
-        "400":
-          description: Unable to parse form or file too big
-          schema:
-            type: string
-        "409":
-          description: Conflict
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Upload a vault
-      tags:
-      - vault
   /vault/{id}:
     get:
       description: Get a vault by ID
@@ -154,4 +116,49 @@ paths:
       summary: Get a vault by ID
       tags:
       - vaults
+  /vault/{username}:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a vault
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Unable to parse form or file too big
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "409":
+          description: Conflict
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Upload a vault
+      tags:
+      - vault
+securityDefinitions:
+  BasicAuth:
+    type: basic
 swagger: "2.0"

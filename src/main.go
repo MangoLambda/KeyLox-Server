@@ -19,12 +19,10 @@ import (
 // @title KeyLox Server API
 // @version 1.0
 // @description Credentials synchronization server for KeyLox.
-
 // @license.name MIT
 // @license.url https://mit-license.org/
-
 // @BasePath /
-
+// @securityDefinitions.basic BasicAuth
 func main() {
 	db := setupDb()
 	defer db.Close()
@@ -94,7 +92,6 @@ func setupMiddleware(router *chi.Mux) {
 
 func setupRoutes(router *chi.Mux, db *sql.DB) {
 	router.Post("/register", postHandlers.RegisterHandler(db))
-	// TODO: Add username (or user id?) to the route
 	router.Post("/vault/{username}", postHandlers.VaultHandler(db))
 	router.Get("/user/{username}", getHandlers.GetUserHandler(db))
 	router.Get("/vault/{username}", getHandlers.GetVaultHandler(db))
