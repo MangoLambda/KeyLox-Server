@@ -55,6 +55,12 @@ func setupDb() *sql.DB {
 		panic(err)
 	}
 
+	// Enable WAL mode
+	_, err = db.Exec("PRAGMA journal_mode = WAL;")
+	if err != nil {
+		panic(err)
+	}
+
 	// Create tables if they don't exist
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -80,13 +86,23 @@ func setupDb() *sql.DB {
 		panic(err)
 	}
 
+	// Periodically trigger a checkpoint
+	go func() {
+		for {
+			_, err := db.Exec("PRAGMA wal_checkpoint(FULL);")
+			if err != nil {
+				log.Printf("Error during checkpoint: %v", err)
+			}
+			time.Sleep(5 * time.Minute)
+		}
+	}()
+
 	return db
 }
 
 func setupMiddleware(router *chi.Mux) {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
-	router.Use(middleware.RequestID)
 	router.Use(middleware.Timeout(60 * time.Second))
 }
 
