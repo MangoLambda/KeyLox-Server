@@ -72,6 +72,8 @@ func VaultHandler(db *sql.DB) http.HandlerFunc {
 			return
 		}
 
+		// TODO Update the vault table in the DB
+
 		// Respond to the client
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("File uploaded successfully"))
