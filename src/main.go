@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
 	_ "github.com/mattn/go-sqlite3"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -104,6 +105,7 @@ func setupMiddleware(router *chi.Mux) {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.Timeout(60 * time.Second))
+	router.Use(httprate.LimitByIP(100, 1*time.Minute))
 }
 
 func setupRoutes(router *chi.Mux, db *sql.DB) {
